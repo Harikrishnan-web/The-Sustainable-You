@@ -1,147 +1,1282 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Sustainable You</title><style>
-:root{--bg:#e6fbd3;--card:#fff;--ink:#1c4a2b;--g1:#46d160;--y:#ffd84d;--b:#4db8ff;--r:#ff7b6e;--line:#1c4a2b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f2417;--card:#1a3a27;--ink:#e8ffe9;--line:#7be28f}}
-:root[data-theme="dark"]{--bg:#0f2417;--card:#1a3a27;--ink:#e8ffe9;--line:#7be28f}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:600 16px "Comic Sans MS","Chalkboard SE","Trebuchet MS",system-ui,sans-serif}
-.bg{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}.bg span{position:absolute;top:-50px;font-size:28px;opacity:.5;animation:fall linear infinite}
-@keyframes fall{to{transform:translateY(110vh) rotate(360deg)}}@keyframes pop{from{transform:scale(.9);opacity:0}}@keyframes bob{50%{transform:translateY(-8px) rotate(6deg)}}
-@keyframes toast{0%{transform:translate(-50%,80px)}15%,85%{transform:translate(-50%,0)}100%{transform:translate(-50%,90px)}}
-#app{position:relative;z-index:1;max-width:1000px;margin:auto;padding:0 12px 40px}
-header{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 0;flex-wrap:wrap}
-.logo{font-size:26px;font-weight:900}.logo i{display:inline-block;animation:bob 2s infinite;font-style:normal}
-.card{background:var(--card);border:3px solid var(--line);border-radius:22px;box-shadow:0 5px 0 var(--line);padding:16px;animation:pop .4s both}
-.btn{border:3px solid var(--line);background:var(--g1);color:#0e3a1b;font:inherit;font-weight:800;border-radius:16px;padding:7px 13px;cursor:pointer;box-shadow:0 4px 0 var(--line);margin:2px}
-.btn:active{transform:translateY(4px);box-shadow:none}.btn.y{background:var(--y)}.btn.r{background:var(--r)}.btn.b{background:var(--b)}
-input,select{font:inherit;border:3px solid var(--line);border-radius:14px;padding:8px 10px;background:var(--card);color:var(--ink);max-width:100%;margin:2px}
-.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));margin-top:14px}
-nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;gap:6px;overflow-x:auto;padding:8px 2px 10px;background:var(--bg)}
-nav .btn{white-space:nowrap}nav .btn.on{background:var(--y)}h2,h3{margin:.2em 0}
-.ring{width:130px;height:130px;border-radius:50%;background:conic-gradient(var(--g1) calc(var(--p)*1%),#0002 0);display:grid;place-items:center;margin:auto}
-.ring b{width:96px;height:96px;border-radius:50%;background:var(--card);display:grid;place-items:center;font-size:30px;border:3px solid var(--line)}
-.bar{height:18px;border:3px solid var(--line);border-radius:12px;overflow:hidden;background:#0001}.bar i{display:block;height:100%;background:var(--g1);transition:width .6s}
-.bar.bad i{background:var(--r)}.row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 0;border-bottom:2px dashed #0002;flex-wrap:wrap}
-.tag{padding:2px 9px;border-radius:12px;border:2px solid var(--line);background:var(--g1);color:#0e3a1b;font-size:13px;font-weight:800}.tag.o{background:var(--y)}.tag.x{background:var(--r)}
-.glass{width:110px;height:170px;border:4px solid var(--line);border-radius:6px 6px 26px 26px;margin:auto;position:relative;overflow:hidden;background:#fff4}
-.glass i{position:absolute;bottom:0;left:0;right:0;background:var(--b);transition:height .8s;animation:bob 3s infinite}.glass.bad i{background:var(--r)}
-.foods{display:flex;flex-wrap:wrap;gap:6px}.foods .btn{background:var(--card);color:var(--ink);font-size:14px}
-.plate{width:190px;height:190px;border-radius:50%;border:5px solid var(--line);margin:10px auto;background:#fff;display:flex;flex-wrap:wrap;align-content:center;justify-content:center;font-size:34px;padding:18px;gap:2px;cursor:pointer}
-.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}.day{border:2px solid var(--line);border-radius:12px;min-height:56px;padding:3px;cursor:pointer;font-size:13px}
-.day.today{background:var(--y);color:#1c4a2b}.day.sel{outline:4px solid var(--b)}.day.star{background:var(--g1);color:#0e3a1b}
-.ov{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#0008;color:#fff;border-radius:16px;text-align:center;padding:12px}
-canvas{display:block;border:4px solid var(--line);border-radius:18px;touch-action:none;max-width:100%;margin:auto}
-.week{display:flex;gap:8px;align-items:flex-end;height:110px}.week div{flex:1;text-align:center;font-size:12px}.week i{display:block;background:var(--b);border:2px solid var(--line);border-radius:8px 8px 0 0}
-#toast{position:fixed;left:50%;bottom:20px;transform:translate(-50%,90px);background:var(--y);color:#1c4a2b;border:3px solid var(--line);border-radius:18px;padding:10px 18px;z-index:9;font-weight:800}#toast.s{animation:toast 2.6s}
-.big{font-size:34px;font-weight:900}.sm{font-size:13px;opacity:.8}
-</style></head><body><div class="bg" id="bg"></div><div id="app"></div><div id="toast"></div>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script>
-/* PASTE YOUR FIREBASE CONFIG HERE */
-const FIREBASE_CONFIG={apiKey:"PASTE_API_KEY",authDomain:"PASTE_PROJECT.firebaseapp.com",projectId:"PASTE_PROJECT_ID",appId:"PASTE_APP_ID"};
-const $=s=>document.querySelector(s),E=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'),T=()=>ymd(new Date());
-const dl=e=>Math.round((new Date(e+'T00:00')-new Date(T()+'T00:00'))/864e5);
-let D=null,me=null,pendingName=null,page='home',mode='in',pl=[],sel=T(),cm={y:new Date().getFullYear(),m:new Date().getMonth()};
-firebase.initializeApp(FIREBASE_CONFIG);const auth=firebase.auth(),db=firebase.firestore();let st=null;
-const U=()=>D,save=()=>{if(!D||!me)return;clearTimeout(st);st=setTimeout(()=>{const sc=calc(D).t;D.score=sc;db.collection('users').doc(me).set(D).catch(e=>toast('Sync failed: '+e.code));db.collection('board').doc(me).set({name:D.name,score:sc}).catch(()=>{})},300)};
-function toast(m){const t=$('#toast');t.textContent=m;t.classList.remove('s');void t.offsetWidth;t.classList.add('s')}
-$('#bg').innerHTML=Array.from({length:9},(_,i)=>`<span style="left:${i*11+3}%;animation-duration:${9+i*2}s;animation-delay:-${i*2}s">${'🍃🌱🌿🍀'[i%4*2]||'🍃'}</span>`).join('');
-const TIERS=[[0,'Seed 🌰'],[50,'Sprout 🌱'],[150,'Sapling 🌿'],[350,'Tree 🌳'],[700,'Forest 🌲'],[1200,'Earth Hero 🌍']];
-const SD={2:['Zero Hunger','🌾','Rescue food before it spoils (Fridge Rescue).'],6:['Clean Water & Sanitation','💧','Keep daily water use ≤ 100 L (Drop Counter).'],12:['Responsible Consumption','♻️','Waste less, eat and cook mindfully (Fridge, Plate, Game).'],13:['Climate Action','🌍','Choose low-carbon meals (Carbon Plate).'],14:['Life Below Water','🐟','Keep trash out of the sea (Ocean Sorter).']};
-const FOODS=[['🥩','Beef',6],['🐑','Lamb',4],['🧀','Cheese',1.3],['🍗','Chicken',.7],['🐟','Fish',.6],['🥚','Egg',.45],['🍚','Rice',.4],['🥛','Milk',.3],['🍝','Pasta',.2],['🫘','Lentils',.09],['🥦','Veggies',.1],['🥔','Potato',.1],['🍎','Fruit',.1],['🍞','Bread',.1],['🥜','Nuts',.1],['🌱','Tofu',.2]];
-const SWAP={Beef:'Lentils',Lamb:'Lentils',Cheese:'Tofu',Chicken:'Tofu',Fish:'Veggies',Egg:'Lentils',Rice:'Potato'};
-const REC={egg:'omelette 🍳',milk:'pancakes 🥞',tomato:'tomato soup 🍅',rice:'fried rice 🍚',bread:'French toast 🍞',banana:'banana smoothie 🍌',spinach:'palak curry 🥬',chicken:'curry 🍛',potato:'roast potatoes 🥔',cheese:'cheese toastie 🧀',curd:'raita 🥣',yogurt:'smoothie 🥤',carrot:'carrot soup 🥕',onion:'caramelised onion 🧅'};
-const idea=n=>{n=n.toLowerCase();for(const k in REC)if(n.includes(k))return REC[k];return'a soup or stir-fry 🍲'};
-const W=[['🚿 Shower',40],['🧺 Laundry',50],['🍽️ Dishes',15],['🪥 Brushing',2],['🚽 Flush',6],['🥤 Drinking',.25],['🌿 Garden',20],['🧼 Hand wash',1.5]];
-function calc(u){const s={2:0,6:0,12:0,13:0,14:0},days=new Set();let t=0;const add=(p,ks)=>{t+=p;ks.forEach(k=>s[k]+=p)};
-for(const d in u.w){const a=u.w[d];if(!a.length)continue;days.add(d);const l=a.reduce((x,y)=>x+y.l,0);add(l<=100?10:l<=150?5:2,[6])}
-for(const d in u.m)u.m[d].forEach(m=>{days.add(d);add(m.co<=1.5?6:m.co<=3?3:1,[13,12])});
-u.fl.forEach(x=>{days.add(x.d);add({u:4,r:6,w:-3}[x.k],[2,12])});u.g.forEach(x=>{days.add(x.d);add(Math.min(30,x.s/5|0),[14])});
-for(const k in s)s[k]=Math.max(0,s[k]);let n=0,d=new Date();if(!days.has(ymd(d)))d.setDate(d.getDate()-1);while(days.has(ymd(d))){n++;d.setDate(d.getDate()-1)}
-return{t:Math.max(0,t),s,days,streak:n}}
-async function myRank(){const r=await db.collection('board').where('score','>',calc(D).t).limit(1000).get();return r.size+1}
-async function loadRank(){const el=$('#rk');try{const[top,pos]=await Promise.all([db.collection('board').orderBy('score','desc').limit(10).get(),myRank()]),med=['🥇','🥈','🥉'],row=(n,sc,i,m)=>`<div class="row" style="${m?'background:var(--y);color:#1c4a2b;border-radius:12px;padding:7px':''}"><span>${med[i]||'#'+(i+1)} ${E(n)}${m?' (you)':''}</span><b>${sc} pts</b></div>`;
-if(!$('#rk'))return;el.innerHTML=`<h3>You are #${pos}</h3>`+top.docs.map((d,i)=>row(d.data().name,d.data().score,i,d.id==me)).join('')+(pos>10?'<div class="row">⋯</div>'+row(D.name,calc(D).t,pos-1,1):'')}catch(e){if(el)el.textContent='Could not load leaderboard: '+e.code}}
-function acts(u){const a={},ad=(d,i)=>(a[d]=a[d]||new Set()).add(i);for(const d in u.w)if(u.w[d].length)ad(d,'💧');for(const d in u.m)if(u.m[d].length)ad(d,'🍽️');u.fl.forEach(x=>ad(x.d,'🧊'));u.g.forEach(x=>ad(x.d,'🌊'));return a}
-/* AUTH */
-function authView(){$('#app').innerHTML=`<div style="max-width:380px;margin:8vh auto" class="card"><div style="text-align:center"><div class="logo"><i>🐸</i> Sustainable You</div><p>Build daily habits. Boost your SDG score. Climb the global rank!</p></div>
-<div style="text-align:center"><button class="btn ${mode=='in'?'y':''}" onclick="mode='in';authView()">Log in</button><button class="btn ${mode=='up'?'y':''}" onclick="mode='up';authView()">Sign up</button></div>
-<p><input id="un" placeholder="Username" maxlength="16" style="width:100%"><input id="pw" type="password" placeholder="Password (6+ chars)" style="width:100%"></p><p id="er" style="color:var(--r)"></p>
-<button class="btn" style="width:100%" onclick="doAuth()">${mode=='in'?'Log in 🌿':'Create my account 🌱'}</button><p class="sm">☁️ Your account and progress sync across all your devices.</p></div>`}
-function doAuth(){const n=$('#un').value.trim(),p=$('#pw').value,er=m=>$('#er').textContent=m;
-if(!/^[A-Za-z0-9_]{2,16}$/.test(n))return er('Username: 2-16 letters, numbers or _');if(p.length<6)return er('Password needs 6+ characters');
-const em=n.toLowerCase()+'@sustainableyou.app';er('Please wait…');
-(mode=='up'?(pendingName=n,auth.createUserWithEmailAndPassword(em,p)):auth.signInWithEmailAndPassword(em,p)).catch(e=>er({'auth/email-already-in-use':'Username taken','auth/invalid-credential':'Wrong username or password','auth/wrong-password':'Wrong username or password','auth/user-not-found':'Wrong username or password','auth/network-request-failed':'No internet connection'}[e.code]||e.code+' (check Firebase setup)'))}
-function logout(){auth.signOut()}
-auth.onAuthStateChanged(async u=>{if(!u){me=null;D=null;return authView()}me=u.uid;try{const sn=await db.collection('users').doc(me).get();D=sn.exists?sn.data():{name:pendingName||u.email.split('@')[0],f:[],fl:[],w:{},m:{},g:[],joined:T(),score:0};['f','fl','g'].forEach(k=>D[k]=D[k]||[]);['w','m'].forEach(k=>D[k]=D[k]||{});if(!sn.exists)save();page='home';render()}catch(e){authView();$('#er').textContent='Database error: '+e.code+' (check Firestore rules)'}});
-/* PAGES */
-const NAV=[['home','🏠 Home'],['fridge','🧊 Fridge Rescue'],['water','💧 Drop Counter'],['plate','🍽️ Carbon Plate'],['ocean','🌊 Ocean Sorter'],['cal','📅 Calendar'],['rank','🏆 Global Rank'],['sdg','🎯 My SDGs']];
-const go=p=>{page=p;render()};
-function render(){if(!me||!U())return authView();const c=calc(U());
-$('#app').innerHTML=`<header><div class="logo"><i>🐸</i> Sustainable You</div><div>⭐ ${c.t} · 🔥 ${c.streak}d · 👤 ${E(U().name)} <button class="btn y" onclick="logout()">Log out</button></div></header>
-<nav>${NAV.map(n=>`<button class="btn ${page==n[0]?'on':''}" onclick="go('${n[0]}')">${n[1]}</button>`).join('')}</nav><main>${P[page]()}</main>`;if(page=='ocean')ocean();if(page=='rank')loadRank();if(page=='home')myRank().then(r=>{const e=$('#hr');if(e)e.textContent='#'+r}).catch(()=>{})}
-const P={
-home(){const u=U(),c=calc(u),t=T(),w=(u.w[t]||[]).reduce((a,x)=>a+x.l,0),m=(u.m[t]||[]).length,soon=u.f.filter(i=>dl(i.e)<=2).length;
-let ti=0;TIERS.forEach((x,i)=>{if(c.t>=x[0])ti=i});const nx=TIERS[ti+1],pct=nx?(c.t-TIERS[ti][0])/(nx[0]-TIERS[ti][0])*100:100;
-return`<div class="grid"><div class="card" style="text-align:center"><div class="ring" style="--p:${Math.min(100,c.t/12)}"><b>${c.t}</b></div><h2>SDG Score</h2><span class="tag o">${TIERS[ti][1]}</span><div class="bar" style="margin-top:10px"><i style="width:${pct}%"></i></div><p class="sm">${nx?nx[0]-c.t+' pts to '+nx[1]:'Max tier reached!'}</p></div>
-<div class="card" style="text-align:center"><h3>Global Rank</h3><div class="big" id="hr">…</div><p class="sm">live worldwide ranking</p><h3>🔥 Streak</h3><div class="big">${c.streak} day${c.streak==1?'':'s'}</div><button class="btn b" onclick="go('rank')">Leaderboard</button></div>
-<div class="card"><h3>Today's quests (${t})</h3><div class="row">💧 Water today <span class="tag ${w?(w<=100?'':'o'):'x'}">${w?w.toFixed(1)+' L':'not logged'}</span></div><div class="row">🍽️ Meals logged <span class="tag ${m?'':'x'}">${m}</span></div><div class="row">🧊 Items to rescue <span class="tag ${soon?'o':''}">${soon}</span></div><div class="row">🌊 Ocean plays <span class="tag">${u.g.filter(x=>x.d==t).length}</span></div></div></div>
-<div class="grid">${[['fridge','🧊','Fridge Rescue','Track food & stop waste'],['water','💧','Drop Counter','Log water use'],['plate','🍽️','Carbon Plate','Build low-CO₂ meals'],['ocean','🌊','Ocean Sorter','Play & clean the sea']].map(x=>`<div class="card" style="cursor:pointer;text-align:center" onclick="go('${x[0]}')"><div class="big">${x[1]}</div><h3>${x[2]}</h3><span class="sm">${x[3]}</span></div>`).join('')}</div>`},
-fridge(){const u=U(),it=[...u.f].sort((a,b)=>a.e<b.e?-1:1),soon=it.filter(i=>dl(i.e)>=0&&dl(i.e)<=2),r=u.fl.filter(x=>x.k!='w').length,w=u.fl.filter(x=>x.k=='w').length;
-return`<div class="grid"><div class="card"><h2>🧊 Add to fridge</h2><input id="fn" placeholder="Item (e.g. Spinach)"><input id="fq" placeholder="Qty" style="width:80px"><br>Expires: <input id="fe" type="date" value="${ymd(new Date(Date.now()+3*864e5))}"><br><button class="btn" onclick="addF()">Add item ➕</button>
-<p>✅ Eaten/rescued: <b>${r}</b> · 🗑️ Wasted: <b>${w}</b></p><p class="sm">SDG 2 & 12 · Eat before expiry: +4 pts, rescue (≤2 days left): +6, toss: −3.</p></div>
-<div class="card"><h2>🍳 Cook first!</h2>${soon.length?soon.map(i=>`<div class="row">${E(i.n)} <span class="tag o">try ${idea(i.n)}</span></div>`).join(''):'<p>Nothing urgent. Fridge is happy 😊</p>'}</div></div>
-<div class="card" style="margin-top:14px"><h2>My fridge (${it.length})</h2>${it.length?it.map(i=>{const d=dl(i.e);return`<div class="row"><span>${E(i.n)} ${E(i.q||'')}</span><span class="tag ${d<0?'x':d<=2?'o':''}">${d<0?'Expired '+-d+'d ago':d==0?'Today!':d+' days left'}</span><span><button class="btn" onclick="eatF(${i.id})">😋 Eaten</button><button class="btn r" onclick="tossF(${i.id})">🗑️ Toss</button></span></div>`}).join(''):'<p>Empty fridge! Add items above.</p>'}</div>`},
-water(){const u=U(),t=T(),a=u.w[t]||[],tot=a.reduce((x,y)=>x+y.l,0),pc=Math.min(100,tot),days=[...Array(7)].map((_,i)=>{const d=new Date();d.setDate(d.getDate()-6+i);const k=ymd(d);return[k,'SMTWTFS'[d.getDay()],(u.w[k]||[]).reduce((x,y)=>x+y.l,0)]});
-return`<div class="grid"><div class="card" style="text-align:center"><h2>💧 Today</h2><div class="glass ${tot>100?'bad':''}"><i style="height:${pc}%"></i></div><div class="big">${tot.toFixed(1)} L</div><p class="sm">Goal: ≤ 100 L (world avg ≈ 135 L)</p><span class="tag ${tot<=100?'':'x'}">${tot==0?'Log something!':tot<=100?'On track 🌟':'Over goal 😬'}</span></div>
-<div class="card"><h2>Quick add</h2>${W.map((x,i)=>`<button class="btn b" onclick="addW(${i})">${x[0]} ${x[1]}L</button>`).join('')}<p><input id="wl" placeholder="Label" style="width:110px"><input id="wv" type="number" min="0" placeholder="Litres" style="width:90px"><button class="btn" onclick="addC()">Add</button></p><p class="sm">💡 A dripping tap wastes ~5,000 L a year. SDG 6 · ≤100 L/day = 10 pts, ≤150 = 5.</p></div></div>
-<div class="grid"><div class="card"><h3>Today's log</h3>${a.length?a.map((x,i)=>`<div class="row">${E(x.n)} <b>${x.l} L</b><button class="btn r" onclick="delW(${i})">✖</button></div>`).join(''):'<p>No entries yet.</p>'}</div>
-<div class="card"><h3>Last 7 days</h3><div class="week">${days.map(d=>`<div><i style="height:${Math.min(100,d[2]/150*100)}px"></i>${d[1]}<br>${Math.round(d[2])}</div>`).join('')}</div></div></div>`},
-plate(){const u=U(),co=pl.reduce((a,i)=>a+FOODS[i][2],0),top=pl.length?pl.reduce((a,i)=>FOODS[i][2]>FOODS[a][2]?i:a):-1;let tip='Tap foods to build your plate!';
-if(top>=0){const f=FOODS[top],s=SWAP[f[1]];tip=s&&f[2]>=.3?`Swap ${f[0]} ${f[1]} for ${s} and save ~${(f[2]-FOODS.find(x=>x[1]==s)[2]).toFixed(1)} kg CO₂!`:'This plate is already light 🌈'}
-const ms=u.m[T()]||[];return`<div class="grid"><div class="card"><h2>🍽️ Build your plate</h2><div class="foods">${FOODS.map((f,i)=>`<button class="btn" onclick="pl.push(${i});render()">${f[0]} ${f[1]}</button>`).join('')}</div><p class="sm">CO₂ per serving. Tap the plate to remove last item.</p></div>
-<div class="card" style="text-align:center"><div class="plate" onclick="pl.pop();render()">${pl.map(i=>FOODS[i][0]).join('')||'😋'}</div><div class="big">${co.toFixed(2)} kg CO₂e</div><div class="bar ${co>3?'bad':''}"><i style="width:${Math.min(100,co/5*100)}%"></i></div><p>${co<=1.5?'Low-carbon hero 🌟':co<=3?'Okay 👍':'High-carbon 🔥'}</p><p class="sm">${tip}</p><select id="mt"><option>Breakfast</option><option>Lunch</option><option>Dinner</option><option>Snack</option></select><button class="btn" onclick="logM()">Log meal ✅</button><button class="btn r" onclick="pl=[];render()">Clear</button></div></div>
-<div class="card" style="margin-top:14px"><h3>Today's meals (SDG 13)</h3>${ms.length?ms.map((m,i)=>`<div class="row">${m.t}: ${m.items.join(' ')} <span class="tag ${m.co<=1.5?'':m.co<=3?'o':'x'}">${m.co} kg</span><button class="btn r" onclick="delM(${i})">✖</button></div>`).join(''):'<p>No meals logged yet.</p>'}</div>`},
-ocean(){const u=U(),p=u.g.filter(x=>x.d==T()),best=Math.max(0,...u.g.map(x=>x.s));return`<div class="card"><h2>🌊 Ocean Cleanup Sorter (SDG 14)</h2><p class="sm">Drag falling trash into the right bin before it hits the sea! 3 lives. Points = score ÷ 5 (max 30/play). Plays today: ${p.length} · Best: ${best}</p><div style="position:relative;max-width:720px;margin:auto"><canvas id="cv"></canvas><div id="ov" class="ov"><h2>Ready? 🧤</h2><p>♻️ bottles, cans, paper · 🍌 food scraps · 🗑️ everything else</p><button class="btn" onclick="gStart()">Play!</button></div></div></div>`},
-cal(){const u=U(),a=acts(u),f=new Date(cm.y,cm.m,1).getDay(),n=new Date(cm.y,cm.m+1,0).getDate(),cells=[...Array(f)].map(()=>'<div></div>');
-for(let d=1;d<=n;d++){const k=cm.y+'-'+String(cm.m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0'),s=a[k]||new Set();cells.push(`<div class="day ${k==T()?'today':''} ${k==sel?'sel':''} ${s.size>=3?'star':''}" onclick="sel='${k}';render()">${d}<br>${[...s].join('')}</div>`)}
-const w=u.w[sel]||[],m=u.m[sel]||[],fl=u.fl.filter(x=>x.d==sel),g=u.g.filter(x=>x.d==sel);
-return`<div class="card"><div class="row"><button class="btn" onclick="cm.m--;if(cm.m<0){cm.m=11;cm.y--}render()">◀</button><h2>${new Date(cm.y,cm.m,1).toLocaleString('en',{month:'long',year:'numeric'})}</h2><button class="btn" onclick="cm.m++;if(cm.m>11){cm.m=0;cm.y++}render()">▶</button></div><div class="cal">${'SMTWTFS'.split('').map(x=>`<b>${x}</b>`).join('')}${cells.join('')}</div><p class="sm">💧 water 🍽️ meal 🧊 fridge 🌊 game · green = 3+ habits · 🔥 streak: ${calc(u).streak}</p></div>
-<div class="card" style="margin-top:14px"><h3>${sel}</h3>${w.length+m.length+fl.length+g.length?'':'<p>No habits logged this day.</p>'}${w.length?`<div class="row">💧 Water <b>${w.reduce((x,y)=>x+y.l,0).toFixed(1)} L</b> (${w.length} entries)</div>`:''}${m.map(x=>`<div class="row">🍽️ ${x.t} ${x.items.join('')} <b>${x.co} kg</b></div>`).join('')}${fl.map(x=>`<div class="row">🧊 ${{u:'Ate',r:'Rescued',w:'Wasted'}[x.k]} ${E(x.n)}</div>`).join('')}${g.map(x=>`<div class="row">🌊 Game score <b>${x.s}</b></div>`).join('')}</div>`},
-rank(){return`<div class="card"><h2>🏆 Global Rank</h2><p class="sm">Live worldwide leaderboard: every player on every device.</p><div id="rk">Loading…</div></div>`},
-sdg(){const c=calc(U());return`<div class="grid">${Object.keys(SD).map(k=>{const s=SD[k],v=c.s[k];return`<div class="card"><div class="big">${s[1]}</div><h3>SDG ${k}: ${s[0]}</h3><p class="sm">${s[2]}</p><div class="bar"><i style="width:${Math.min(100,v)}%"></i></div><p><b>${v} pts</b> · Level ${Math.floor(v/50)+1} ${v>=100?'🏅':''}</p></div>`}).join('')}</div><p class="sm">Points from a habit can count toward more than one SDG, but your total SDG score counts each point once.</p>`}};
-/* ACTIONS */
-function addF(){const n=$('#fn').value.trim(),e=$('#fe').value;if(!n||!e)return toast('Add a name and expiry date');U().f.push({id:Date.now(),n,q:$('#fq').value.trim(),e});save();render()}
-function eatF(id){const u=U(),i=u.f.find(x=>x.id==id),d=dl(i.e);if(d<0)return toast('Too old to eat! Toss it safely 🗑️');const k=d<=2?'r':'u';u.fl.push({d:T(),k,n:i.n});u.f=u.f.filter(x=>x.id!=id);save();toast(k=='r'?'Rescued! +6 ⭐':'Yum! +4 ⭐');render()}
-function tossF(id){const u=U(),i=u.f.find(x=>x.id==id);u.fl.push({d:T(),k:'w',n:i.n});u.f=u.f.filter(x=>x.id!=id);save();toast('Wasted… −3 ⭐');render()}
-const pushW=(n,l)=>{const u=U(),t=T();(u.w[t]=u.w[t]||[]).push({n,l});save();render()};
-function addW(i){pushW(W[i][0],W[i][1]);toast('Logged 💧')}
-function addC(){const l=parseFloat($('#wv').value);if(!(l>0))return toast('Enter litres');pushW($('#wl').value.trim()||'💧 Other',l)}
-function delW(i){U().w[T()].splice(i,1);save();render()}
-function logM(){if(!pl.length)return toast('Add food to your plate first');const u=U(),t=T(),co=+pl.reduce((a,i)=>a+FOODS[i][2],0).toFixed(2);(u.m[t]=u.m[t]||[]).push({t:$('#mt').value,items:pl.map(i=>FOODS[i][0]),co});pl=[];save();toast(co<=1.5?'Low-carbon! +6 ⭐':co<=3?'Nice! +3 ⭐':'Logged +1 ⭐');render()}
-function delM(i){U().m[T()].splice(i,1);save();render()}
-/* OCEAN GAME */
-const BINS=[{k:'R',e:'♻️',c:'#4db8ff',n:'Recycle'},{k:'O',e:'🍌',c:'#7ed957',n:'Compost'},{k:'T',e:'🗑️',c:'#b9a8ff',n:'Trash'}],IT={R:['🧴','🥫','📰','📦','🍾'],O:['🍌','🍎','🥕','🍂','🥚'],T:['🚬','🛍️','🧦','🪥','🍬']};let LID=0;
-function ocean(){const cv=$('#cv');if(!cv)return;const W=cv.width=Math.max(300,Math.min(720,cv.parentElement.clientWidth)),H=cv.height=440,x=cv.getContext('2d'),id=++LID,bw=W/3,ov=$('#ov');
-let g={on:false,it:[],sc:0,li:3,lv:1,n:0,t:0,d:null,fx:[]};
-window.gStart=()=>{g={on:true,it:[],sc:0,li:3,lv:1,n:0,t:0,d:null,fx:[]};ov.style.display='none'};
-const end=()=>{g.on=false;g.d=null;const p=Math.min(30,g.sc/5|0);if(g.sc>0){U().g.push({d:T(),s:g.sc});save()}ov.style.display='flex';ov.innerHTML=`<h2>Game over!</h2><p>Score ${g.sc} → +${p} SDG points 🌟</p><button class="btn" onclick="gStart()">Play again</button>`};
-const pos=e=>{const r=cv.getBoundingClientRect();return[(e.clientX-r.left)*W/r.width,(e.clientY-r.top)*H/r.height]};
-cv.onpointerdown=e=>{if(!g.on)return;const[px,py]=pos(e);for(let i=g.it.length-1;i>=0;i--){const o=g.it[i];if(Math.hypot(o.x-px,o.y-py)<34){g.d=o;cv.setPointerCapture(e.pointerId);break}}};
-cv.onpointermove=e=>{if(g.d){const[px,py]=pos(e);g.d.x=px;g.d.y=py}};
-cv.onpointerup=e=>{const o=g.d;if(!o)return;g.d=null;const[px,py]=pos(e);if(py>H-135){g.it=g.it.filter(q=>q!==o);const b=BINS[Math.max(0,Math.min(2,px/bw|0))];if(b.k===o.k){g.sc+=10;g.n++;if(g.n%5==0)g.lv++;g.fx.push({x:px,y:py,s:'+10',c:'#1f9a3f',a:40})}else{g.li--;g.fx.push({x:px,y:py,s:'✖',c:'#e33',a:40})}}};
-const f=()=>{if(id!==LID||!document.body.contains(cv))return;
-if(g.on){g.t++;if(g.t%Math.max(28,85-g.lv*8)==0){const k='ROT'[Math.random()*3|0];g.it.push({k,e:IT[k][Math.random()*5|0],x:30+Math.random()*(W-60),y:-20,v:.8+g.lv*.18})}
-g.it=g.it.filter(o=>{if(o===g.d)return true;o.y+=o.v;if(o.y>H-110){g.li--;g.fx.push({x:o.x,y:H-120,s:'💦',c:'#06c',a:40});return false}return true});if(g.li<=0)end()}
-const gr=x.createLinearGradient(0,0,0,H);gr.addColorStop(0,'#bfefff');gr.addColorStop(1,'#e9fff1');x.fillStyle=gr;x.fillRect(0,0,W,H);x.textAlign='left';
-x.font='34px serif';x.fillText('☀️',W-60,45);x.fillText('☁️',(g.t/3)%W,60);
-x.fillStyle='#2aa9e8';x.beginPath();x.moveTo(0,H);for(let i=0;i<=W;i+=10)x.lineTo(i,H-62+Math.sin(i/30+g.t/20)*6);x.lineTo(W,H);x.fill();
-x.font='26px serif';x.fillText('🐟',(g.t/2)%W,H-20);x.fillText('🐢',W-(g.t/3)%W,H-8);
-BINS.forEach((b,i)=>{x.fillStyle=b.c;x.strokeStyle='#1c4a2b';x.lineWidth=4;x.beginPath();x.roundRect(i*bw+10,H-112,bw-20,64,16);x.fill();x.stroke();x.fillStyle='#123';x.font='bold 15px sans-serif';x.textAlign='center';x.fillText(b.e+' '+b.n,i*bw+bw/2,H-72)});
-x.font='36px serif';g.it.forEach(o=>x.fillText(o.e,o.x,o.y+12));
-g.fx=g.fx.filter(q=>{x.fillStyle=q.c;x.font='bold 22px sans-serif';x.fillText(q.s,q.x,q.y-(40-q.a));return--q.a>0});
-x.textAlign='left';x.fillStyle='#1c4a2b';x.font='bold 18px sans-serif';x.fillText('⭐ '+g.sc+'   Lv '+g.lv+'   '+'❤️'.repeat(Math.max(0,g.li)),12,26);requestAnimationFrame(f)};f()}
-$('#app').innerHTML='<p class="big" style="text-align:center;margin-top:20vh">🐸 Loading…</p>';
-</script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Sustainable You</title>
+  <style>
+    :root {
+      --bg: #e6fbd3;
+      --card: #fff;
+      --ink: #1c4a2b;
+      --g1: #46d160;
+      --y: #ffd84d;
+      --b: #4db8ff;
+      --r: #ff7b6e;
+      --line: #1c4a2b;
+      box-sizing: border-box;
+      padding-top: env(safe-area-inset-top, 0px);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #0f2417;
+        --card: #1a3a27;
+        --ink: #e8ffe9;
+        --line: #7be28f;
+      }
+    }
+
+    :root[data-theme="dark"] {
+      --bg: #0f2417;
+      --card: #1a3a27;
+      --ink: #e8ffe9;
+      --line: #7be28f;
+    }
+
+    html {
+      scroll-padding-top: env(safe-area-inset-top, 0px);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 600 16px "Comic Sans MS", "Chalkboard SE", "Trebuchet MS", system-ui, sans-serif;
+    }
+
+    .bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .bg span {
+      position: absolute;
+      top: -50px;
+      font-size: 28px;
+      opacity: 0.5;
+      animation: fall linear infinite;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(110vh) rotate(360deg);
+      }
+    }
+
+    @keyframes pop {
+      from {
+        transform: scale(0.9);
+        opacity: 0;
+      }
+    }
+
+    @keyframes bob {
+      50% {
+        transform: translateY(-8px) rotate(6deg);
+      }
+    }
+
+    @keyframes toast {
+      0% {
+        transform: translate(-50%, 80px);
+      }
+      15%, 85% {
+        transform: translate(-50%, 0);
+      }
+      100% {
+        transform: translate(-50%, 90px);
+      }
+    }
+
+    #app {
+      position: relative;
+      z-index: 1;
+      max-width: 1000px;
+      margin: auto;
+      padding: 0 12px 40px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 0;
+      flex-wrap: wrap;
+    }
+
+    .logo {
+      font-size: 26px;
+      font-weight: 900;
+    }
+
+    .logo i {
+      display: inline-block;
+      animation: bob 2s infinite;
+      font-style: normal;
+    }
+
+    .card {
+      background: var(--card);
+      border: 3px solid var(--line);
+      border-radius: 22px;
+      box-shadow: 0 5px 0 var(--line);
+      padding: 16px;
+      animation: pop 0.4s both;
+    }
+
+    .btn {
+      border: 3px solid var(--line);
+      background: var(--g1);
+      color: #0e3a1b;
+      font: inherit;
+      font-weight: 800;
+      border-radius: 16px;
+      padding: 7px 13px;
+      cursor: pointer;
+      box-shadow: 0 4px 0 var(--line);
+      margin: 2px;
+    }
+
+    .btn:active {
+      transform: translateY(4px);
+      box-shadow: none;
+    }
+
+    .btn.y {
+      background: var(--y);
+    }
+
+    .btn.r {
+      background: var(--r);
+    }
+
+    .btn.b {
+      background: var(--b);
+    }
+
+    input, select {
+      font: inherit;
+      border: 3px solid var(--line);
+      border-radius: 14px;
+      padding: 8px 10px;
+      background: var(--card);
+      color: var(--ink);
+      max-width: 100%;
+      margin: 2px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+      margin-top: 14px;
+    }
+
+    nav {
+      position: sticky;
+      top: env(safe-area-inset-top, 0px);
+      z-index: 5;
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding: 8px 2px 10px;
+      background: var(--bg);
+    }
+
+    nav .btn {
+      white-space: nowrap;
+    }
+
+    nav .btn.on {
+      background: var(--y);
+    }
+
+    h2, h3 {
+      margin: 0.2em 0;
+    }
+
+    .ring {
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      background: conic-gradient(var(--g1) calc(var(--p) * 1%), #0002 0);
+      display: grid;
+      place-items: center;
+      margin: auto;
+    }
+
+    .ring b {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      background: var(--card);
+      display: grid;
+      place-items: center;
+      font-size: 30px;
+      border: 3px solid var(--line);
+    }
+
+    .bar {
+      height: 18px;
+      border: 3px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+      background: #0001;
+    }
+
+    .bar i {
+      display: block;
+      height: 100%;
+      background: var(--g1);
+      transition: width 0.6s;
+    }
+
+    .bar.bad i {
+      background: var(--r);
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 0;
+      border-bottom: 2px dashed #0002;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      padding: 2px 9px;
+      border-radius: 12px;
+      border: 2px solid var(--line);
+      background: var(--g1);
+      color: #0e3a1b;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .tag.o {
+      background: var(--y);
+    }
+
+    .tag.x {
+      background: var(--r);
+    }
+
+    .glass {
+      width: 110px;
+      height: 170px;
+      border: 4px solid var(--line);
+      border-radius: 6px 6px 26px 26px;
+      margin: auto;
+      position: relative;
+      overflow: hidden;
+      background: #fff4;
+    }
+
+    .glass i {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--b);
+      transition: height 0.8s;
+      animation: bob 3s infinite;
+    }
+
+    .glass.bad i {
+      background: var(--r);
+    }
+
+    .foods {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .foods .btn {
+      background: var(--card);
+      color: var(--ink);
+      font-size: 14px;
+    }
+
+    .plate {
+      width: 190px;
+      height: 190px;
+      border-radius: 50%;
+      border: 5px solid var(--line);
+      margin: 10px auto;
+      background: #fff;
+      display: flex;
+      flex-wrap: wrap;
+      align-content: center;
+      justify-content: center;
+      font-size: 34px;
+      padding: 18px;
+      gap: 2px;
+      cursor: pointer;
+    }
+
+    .cal {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+      text-align: center;
+    }
+
+    .day {
+      border: 2px solid var(--line);
+      border-radius: 12px;
+      min-height: 56px;
+      padding: 3px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .day.today {
+      background: var(--y);
+      color: #1c4a2b;
+    }
+
+    .day.sel {
+      outline: 4px solid var(--b);
+    }
+
+    .day.star {
+      background: var(--g1);
+      color: #0e3a1b;
+    }
+
+    .ov {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #0008;
+      color: #fff;
+      border-radius: 16px;
+      text-align: center;
+      padding: 12px;
+    }
+
+    canvas {
+      display: block;
+      border: 4px solid var(--line);
+      border-radius: 18px;
+      touch-action: none;
+      max-width: 100%;
+      margin: auto;
+    }
+
+    .week {
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+      height: 110px;
+    }
+
+    .week div {
+      flex: 1;
+      text-align: center;
+      font-size: 12px;
+    }
+
+    .week i {
+      display: block;
+      background: var(--b);
+      border: 2px solid var(--line);
+      border-radius: 8px 8px 0 0;
+    }
+
+    #toast {
+      position: fixed;
+      left: 50%;
+      bottom: 20px;
+      transform: translate(-50%, 90px);
+      background: var(--y);
+      color: #1c4a2b;
+      border: 3px solid var(--line);
+      border-radius: 18px;
+      padding: 10px 18px;
+      z-index: 9;
+      font-weight: 800;
+    }
+
+    #toast.s {
+      animation: toast 2.6s;
+    }
+
+    .big {
+      font-size: 34px;
+      font-weight: 900;
+    }
+
+    .sm {
+      font-size: 13px;
+      opacity: 0.8;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg" id="bg"></div>
+  <div id="app"></div>
+  <div id="toast"></div>
+
+  <!-- Firebase Compatibility SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <script>
+    /* FIREBASE CONFIGURATION PLACEHOLDER */
+    const FIREBASE_CONFIG = {
+      apiKey: "YOUR_FIREBASE_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    // Helper functions
+    const $ = s => document.querySelector(s);
+    const E = s => String(s).replace(/[&<">]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    const ymd = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    const T = () => ymd(new Date());
+    const dl = e => Math.round((new Date(e + 'T00:00') - new Date(T() + 'T00:00')) / 864e5);
+
+    // Global application state
+    let D = null;
+    let me = null;
+    let pendingName = null;
+    let page = 'home';
+    let mode = 'in';
+    let pl = [];
+    let sel = T();
+    let cm = { y: new Date().getFullYear(), m: new Date().getMonth() };
+
+    // Initialize Firebase
+    firebase.initializeApp(FIREBASE_CONFIG);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    let st = null;
+
+    const U = () => D;
+    const save = () => {
+      if (!D || !me) return;
+      clearTimeout(st);
+      st = setTimeout(() => {
+        const sc = calc(D).t;
+        D.score = sc;
+        db.collection('users').doc(me).set(D).catch(e => toast('Sync failed: ' + e.code));
+        db.collection('board').doc(me).set({ name: D.name, score: sc }).catch(() => {});
+      }, 300);
+    };
+
+    function toast(m) {
+      const t = $('#toast');
+      t.textContent = m;
+      t.classList.remove('s');
+      void t.offsetWidth;
+      t.classList.add('s');
+    }
+
+    // Floating background elements
+    $('#bg').innerHTML = Array.from({ length: 9 }, (_, i) => 
+      `<span style="left:${i * 11 + 3}%;animation-duration:${9 + i * 2}s;animation-delay:-${i * 2}s">${'🍃🌱🌿🍀'[i % 4 * 2] || '🍃'}</span>`
+    ).join('');
+
+    // Game data and constants
+    const TIERS = [
+      [0, 'Seed 🌰'],
+      [50, 'Sprout 🌱'],
+      [150, 'Sapling 🌿'],
+      [350, 'Tree 🌳'],
+      [700, 'Forest 🌲'],
+      [1200, 'Earth Hero 🌍']
+    ];
+
+    const SD = {
+      2: ['Zero Hunger', '🌾', 'Rescue food before it spoils (Fridge Rescue).'],
+      6: ['Clean Water & Sanitation', '💧', 'Keep daily water use ≤ 100 L (Drop Counter).'],
+      12: ['Responsible Consumption', '♻️', 'Waste less, eat and cook mindfully (Fridge, Plate, Game).'],
+      13: ['Climate Action', '🌍', 'Choose low-carbon meals (Carbon Plate).'],
+      14: ['Life Below Water', '🐟', 'Keep trash out of the sea (Ocean Sorter).']
+    };
+
+    const FOODS = [
+      ['🥩', 'Beef', 6], ['🐑', 'Lamb', 4], ['🧀', 'Cheese', 1.3], ['🍗', 'Chicken', 0.7],
+      ['🐟', 'Fish', 0.6], ['🥚', 'Egg', 0.45], ['🍚', 'Rice', 0.4], ['🥛', 'Milk', 0.3],
+      ['🍝', 'Pasta', 0.2], ['🫘', 'Lentils', 0.09], ['🥦', 'Veggies', 0.1], ['🥔', 'Potato', 0.1],
+      ['🍎', 'Fruit', 0.1], ['🍞', 'Bread', 0.1], ['🥜', 'Nuts', 0.1], ['🌱', 'Tofu', 0.2]
+    ];
+
+    const SWAP = {
+      Beef: 'Lentils', Lamb: 'Lentils', Cheese: 'Tofu',
+      Chicken: 'Tofu', Fish: 'Veggies', Egg: 'Lentils', Rice: 'Potato'
+    };
+
+    const REC = {
+      egg: 'omelette 🍳', milk: 'pancakes 🥞', tomato: 'tomato soup 🍅',
+      rice: 'fried rice 🍚', bread: 'French toast 🍞', banana: 'banana smoothie 🍌',
+      spinach: 'palak curry 🥬', chicken: 'curry 🍛', potato: 'roast potatoes 🥔',
+      cheese: 'cheese toastie 🧀', curd: 'raita 🥣', yogurt: 'smoothie 🥤',
+      carrot: 'carrot soup 🥕', onion: 'caramelised onion 🧅'
+    };
+
+    const idea = n => {
+      n = n.toLowerCase();
+      for (const k in REC) if (n.includes(k)) return REC[k];
+      return 'a soup or stir-fry 🍲';
+    };
+
+    const W = [
+      ['🚿 Shower', 40], ['🧺 Laundry', 50], ['🍽️ Dishes', 15], ['🪥 Brushing', 2],
+      ['🚽 Flush', 6], ['🥤 Drinking', 0.25], ['🌿 Garden', 20], ['🧼 Hand wash', 1.5]
+    ];
+
+    function calc(u) {
+      const s = { 2: 0, 6: 0, 12: 0, 13: 0, 14: 0 };
+      const days = new Set();
+      let t = 0;
+      const add = (p, ks) => {
+        t += p;
+        ks.forEach(k => s[k] += p);
+      };
+
+      for (const d in u.w) {
+        const a = u.w[d];
+        if (!a.length) continue;
+        days.add(d);
+        const l = a.reduce((x, y) => x + y.l, 0);
+        add(l <= 100 ? 10 : l <= 150 ? 5 : 2, [6]);
+      }
+
+      for (const d in u.m) {
+        u.m[d].forEach(m => {
+          days.add(d);
+          add(m.co <= 1.5 ? 6 : m.co <= 3 ? 3 : 1, [13, 12]);
+        });
+      }
+
+      u.fl.forEach(x => {
+        days.add(x.d);
+        add({ u: 4, r: 6, w: -3 }[x.k], [2, 12]);
+      });
+
+      u.g.forEach(x => {
+        days.add(x.d);
+        add(Math.min(30, x.s / 5 | 0), [14]);
+      });
+
+      for (const k in s) s[k] = Math.max(0, s[k]);
+
+      let n = 0;
+      let d = new Date();
+      if (!days.has(ymd(d))) d.setDate(d.getDate() - 1);
+      while (days.has(ymd(d))) {
+        n++;
+        d.setDate(d.getDate() - 1);
+      }
+
+      return { t: Math.max(0, t), s, days, streak: n };
+    }
+
+    async function myRank() {
+      const r = await db.collection('board').where('score', '>', calc(D).t).limit(1000).get();
+      return r.size + 1;
+    }
+
+    async function loadRank() {
+      const el = $('#rk');
+      try {
+        const [top, pos] = await Promise.all([
+          db.collection('board').orderBy('score', 'desc').limit(10).get(),
+          myRank()
+        ]);
+        const med = ['🥇', '🥈', '🥉'];
+        const row = (n, sc, i, m) => 
+          `<div class="row" style="${m ? 'background:var(--y);color:#1c4a2b;border-radius:12px;padding:7px' : ''}">
+            <span>${med[i] || '#' + (i + 1)} ${E(n)}${m ? ' (you)' : ''}</span>
+            <b>${sc} pts</b>
+          </div>`;
+
+        if (!$('#rk')) return;
+        el.innerHTML = `<h3>You are #${pos}</h3>` + 
+          top.docs.map((d, i) => row(d.data().name, d.data().score, i, d.id == me)).join('') + 
+          (pos > 10 ? '<div class="row">⋯</div>' + row(D.name, calc(D).t, pos - 1, 1) : '');
+      } catch (e) {
+        if (el) el.textContent = 'Could not load leaderboard: ' + e.code;
+      }
+    }
+
+    function acts(u) {
+      const a = {};
+      const ad = (d, i) => (a[d] = a[d] || new Set()).add(i);
+      for (const d in u.w) if (u.w[d].length) ad(d, '💧');
+      for (const d in u.m) if (u.m[d].length) ad(d, '🍽️');
+      u.fl.forEach(x => ad(x.d, '🧊'));
+      u.g.forEach(x => ad(x.d, '🌊'));
+      return a;
+    }
+
+    /* AUTHENTICATION */
+    function authView() {
+      $('#app').innerHTML = `
+        <div style="max-width:380px;margin:8vh auto" class="card">
+          <div style="text-align:center">
+            <div class="logo"><i>🐸</i> Sustainable You</div>
+            <p>Build daily habits. Boost your SDG score. Climb the global rank!</p>
+          </div>
+          <div style="text-align:center">
+            <button class="btn ${mode == 'in' ? 'y' : ''}" onclick="mode='in';authView()">Log in</button>
+            <button class="btn ${mode == 'up' ? 'y' : ''}" onclick="mode='up';authView()">Sign up</button>
+          </div>
+          <p>
+            <input id="un" placeholder="Username" maxlength="16" style="width:100%">
+            <input id="pw" type="password" placeholder="Password (6+ chars)" style="width:100%">
+          </p>
+          <p id="er" style="color:var(--r)"></p>
+          <button class="btn" style="width:100%" onclick="doAuth()">${mode == 'in' ? 'Log in 🌿' : 'Create my account 🌱'}</button>
+          <p class="sm">☁️ Your account and progress sync across all your devices.</p>
+        </div>`;
+    }
+
+    function doAuth() {
+      const n = $('#un').value.trim();
+      const p = $('#pw').value;
+      const er = m => $('#er').textContent = m;
+
+      if (!/^[A-Za-z0-9_]{2,16}$/.test(n)) return er('Username: 2-16 letters, numbers or _');
+      if (p.length < 6) return er('Password needs 6+ characters');
+
+      const em = n.toLowerCase() + '@sustainableyou.app';
+      er('Please wait…');
+
+      (mode == 'up' 
+        ? (pendingName = n, auth.createUserWithEmailAndPassword(em, p)) 
+        : auth.signInWithEmailAndPassword(em, p)
+      ).catch(e => er({
+        'auth/email-already-in-use': 'Username taken',
+        'auth/invalid-credential': 'Wrong username or password',
+        'auth/wrong-password': 'Wrong username or password',
+        'auth/user-not-found': 'Wrong username or password',
+        'auth/network-request-failed': 'No internet connection'
+      }[e.code] || e.code + ' (check Firebase setup)'));
+    }
+
+    function logout() {
+      auth.signOut();
+    }
+
+    auth.onAuthStateChanged(async u => {
+      if (!u) {
+        me = null;
+        D = null;
+        return authView();
+      }
+      me = u.uid;
+      try {
+        const sn = await db.collection('users').doc(me).get();
+        D = sn.exists ? sn.data() : {
+          name: pendingName || u.email.split('@')[0],
+          f: [], fl: [], w: {}, m: {}, g: [],
+          joined: T(), score: 0
+        };
+        ['f', 'fl', 'g'].forEach(k => D[k] = D[k] || []);
+        ['w', 'm'].forEach(k => D[k] = D[k] || {});
+        if (!sn.exists) save();
+        page = 'home';
+        render();
+      } catch (e) {
+        authView();
+        $('#er').textContent = 'Database error: ' + e.code + ' (check Firestore rules)';
+      }
+    });
+
+    /* VIEWS AND RENDERING */
+    const NAV = [
+      ['home', '🏠 Home'],
+      ['fridge', '🧊 Fridge Rescue'],
+      ['water', '💧 Drop Counter'],
+      ['plate', '🍽️ Carbon Plate'],
+      ['ocean', '🌊 Ocean Sorter'],
+      ['cal', '📅 Calendar'],
+      ['rank', '🏆 Global Rank'],
+      ['sdg', '🎯 My SDGs']
+    ];
+
+    const go = p => {
+      page = p;
+      render();
+    };
+
+    function render() {
+      if (!me || !U()) return authView();
+      const c = calc(U());
+
+      $('#app').innerHTML = `
+        <header>
+          <div class="logo"><i>🐸</i> Sustainable You</div>
+          <div>⭐ ${c.t} · 🔥 ${c.streak}d · 👤 ${E(U().name)} 
+            <button class="btn y" onclick="logout()">Log out</button>
+          </div>
+        </header>
+        <nav>${NAV.map(n => `<button class="btn ${page == n[0] ? 'on' : ''}" onclick="go('${n[0]}')">${n[1]}</button>`).join('')}</nav>
+        <main>${P[page]()}</main>`;
+
+      if (page == 'ocean') ocean();
+      if (page == 'rank') loadRank();
+      if (page == 'home') {
+        myRank().then(r => {
+          const e = $('#hr');
+          if (e) e.textContent = '#' + r;
+        }).catch(() => {});
+      }
+    }
+
+    const P = {
+      home() {
+        const u = U();
+        const c = calc(u);
+        const t = T();
+        const w = (u.w[t] || []).reduce((a, x) => a + x.l, 0);
+        const m = (u.m[t] || []).length;
+        const soon = u.f.filter(i => dl(i.e) <= 2).length;
+
+        let ti = 0;
+        TIERS.forEach((x, i) => { if (c.t >= x[0]) ti = i; });
+        const nx = TIERS[ti + 1];
+        const pct = nx ? (c.t - TIERS[ti][0]) / (nx[0] - TIERS[ti][0]) * 100 : 100;
+
+        return `
+          <div class="grid">
+            <div class="card" style="text-align:center">
+              <div class="ring" style="--p:${Math.min(100, c.t / 12)}"><b>${c.t}</b></div>
+              <h2>SDG Score</h2>
+              <span class="tag o">${TIERS[ti][1]}</span>
+              <div class="bar" style="margin-top:10px"><i style="width:${pct}%"></i></div>
+              <p class="sm">${nx ? nx[0] - c.t + ' pts to ' + nx[1] : 'Max tier reached!'}</p>
+            </div>
+            <div class="card" style="text-align:center">
+              <h3>Global Rank</h3>
+              <div class="big" id="hr">…</div>
+              <p class="sm">live worldwide ranking</p>
+              <h3>🔥 Streak</h3>
+              <div class="big">${c.streak} day${c.streak == 1 ? '' : 's'}</div>
+              <button class="btn b" onclick="go('rank')">Leaderboard</button>
+            </div>
+            <div class="card">
+              <h3>Today's quests (${t})</h3>
+              <div class="row">💧 Water today <span class="tag ${w ? (w <= 100 ? '' : 'o') : 'x'}">${w ? w.toFixed(1) + ' L' : 'not logged'}</span></div>
+              <div class="row">🍽️ Meals logged <span class="tag ${m ? '' : 'x'}">${m}</span></div>
+              <div class="row">🧊 Items to rescue <span class="tag ${soon ? 'o' : ''}">${soon}</span></div>
+              <div class="row">🌊 Ocean plays <span class="tag">${u.g.filter(x => x.d == t).length}</span></div>
+            </div>
+          </div>
+          <div class="grid">
+            ${[
+              ['fridge', '🧊', 'Fridge Rescue', 'Track food & stop waste'],
+              ['water', '💧', 'Drop Counter', 'Log water use'],
+              ['plate', '🍽️', 'Carbon Plate', 'Build low-CO₂ meals'],
+              ['ocean', '🌊', 'Ocean Sorter', 'Play & clean the sea']
+            ].map(x => `
+              <div class="card" style="cursor:pointer;text-align:center" onclick="go('${x[0]}')">
+                <div class="big">${x[1]}</div>
+                <h3>${x[2]}</h3>
+                <span class="sm">${x[3]}</span>
+              </div>
+            `).join('')}
+          </div>`;
+      },
+
+      fridge() {
+        const u = U();
+        const it = [...u.f].sort((a, b) => a.e < b.e ? -1 : 1);
+        const soon = it.filter(i => dl(i.e) >= 0 && dl(i.e) <= 2);
+        const r = u.fl.filter(x => x.k != 'w').length;
+        const w = u.fl.filter(x => x.k == 'w').length;
+
+        return `
+          <div class="grid">
+            <div class="card">
+              <h2>🧊 Add to fridge</h2>
+              <input id="fn" placeholder="Item (e.g. Spinach)">
+              <input id="fq" placeholder="Qty" style="width:80px"><br>
+              Expires: <input id="fe" type="date" value="${ymd(new Date(Date.now() + 3 * 864e5))}"><br>
+              <button class="btn" onclick="addF()">Add item ➕</button>
+              <p>✅ Eaten/rescued: <b>${r}</b> · 🗑️ Wasted: <b>${w}</b></p>
+              <p class="sm">SDG 2 & 12 · Eat before expiry: +4 pts, rescue (≤2 days left): +6, toss: −3.</p>
+            </div>
+            <div class="card">
+              <h2>🍳 Cook first!</h2>
+              ${soon.length ? soon.map(i => `<div class="row">${E(i.n)} <span class="tag o">try ${idea(i.n)}</span></div>`).join('') : '<p>Nothing urgent. Fridge is happy 😊</p>'}
+            </div>
+          </div>
+          <div class="card" style="margin-top:14px">
+            <h2>My fridge (${it.length})</h2>
+            ${it.length ? it.map(i => {
+              const d = dl(i.e);
+              return `
+                <div class="row">
+                  <span>${E(i.n)}${E(i.q || '')}</span>
+                  <span class="tag ${d < 0 ? 'x' : d <= 2 ? 'o' : ''}">${d < 0 ? 'Expired ' + -d + 'd ago' : d == 0 ? 'Today!' : d + ' days left'}</span>
+                  <span>
+                    <button class="btn" onclick="eatF(${i.id})">😋 Eaten</button>
+                    <button class="btn r" onclick="tossF(${i.id})">🗑️ Toss</button>
+                  </span>
+                </div>`;
+            }).join('') : '<p>Empty fridge! Add items above.</p>'}
+          </div>`;
+      },
+
+      water() {
+        const u = U();
+        const t = T();
+        const a = u.w[t] || [];
+        const tot = a.reduce((x, y) => x + y.l, 0);
+        const pc = Math.min(100, tot);
+        const days = [...Array(7)].map((_, i) => {
+          const d = new Date();
+          d.setDate(d.getDate() - 6 + i);
+          const k = ymd(d);
+          return [k, 'SMTWTFS'[d.getDay()], (u.w[k] || []).reduce((x, y) => x + y.l, 0)];
+        });
+
+        return `
+          <div class="grid">
+            <div class="card" style="text-align:center">
+              <h2>💧 Today</h2>
+              <div class="glass ${tot > 100 ? 'bad' : ''}"><i style="height:${pc}%"></i></div>
+              <div class="big">${tot.toFixed(1)} L</div>
+              <p class="sm">Goal: ≤ 100 L (world avg ≈ 135 L)</p>
+              <span class="tag ${tot <= 100 ? '' : 'x'}">${tot == 0 ? 'Log something!' : tot <= 100 ? 'On track 🌟' : 'Over goal 😬'}</span>
+            </div>
+            <div class="card">
+              <h2>Quick add</h2>
+              ${W.map((x, i) => `<button class="btn b" onclick="addW(${i})">${x[0]}${x[1]}L</button>`).join('')}
+              <p>
+                <input id="wl" placeholder="Label" style="width:110px">
+                <input id="wv" type="number" min="0" placeholder="Litres" style="width:90px">
+                <button class="btn" onclick="addC()">Add</button>
+              </p>
+              <p class="sm">💡 A dripping tap wastes ~5,000 L a year. SDG 6 · ≤100 L/day = 10 pts, ≤150 = 5.</p>
+            </div>
+          </div>
+          <div class="grid">
+            <div class="card">
+              <h3>Today's log</h3>
+              ${a.length ? a.map((x, i) => `<div class="row">${E(x.n)} <b>${x.l} L</b><button class="btn r" onclick="delW(${i})">✖</button></div>`).join('') : '<p>No entries yet.</p>'}
+            </div>
+            <div class="card">
+              <h3>Last 7 days</h3>
+              <div class="week">
+                ${days.map(d => `<div><i style="height:${Math.min(100, d[2] / 150 * 100)}px"></i>${d[1]}<br>${Math.round(d[2])}</div>`).join('')}
+              </div>
+            </div>
+          </div>`;
+      },
+
+      plate() {
+        const u = U();
+        const co = pl.reduce((a, i) => a + FOODS[i][2], 0);
+        const top = pl.length ? pl.reduce((a, i) => FOODS[i][2] > FOODS[a][2] ? i : a) : -1;
+        let tip = 'Tap foods to build your plate!';
+
+        if (top >= 0) {
+          const f = FOODS[top];
+          const s = SWAP[f[1]];
+          tip = s && f[2] >= 0.3 
+            ? `Swap ${f[0]} ${f[1]} for ${s} and save ~${(f[2] - FOODS.find(x => x[1] == s)[2]).toFixed(1)} kg CO₂!` 
+            : 'This plate is already light 🌈';
+        }
+
+        const ms = u.m[T()] || [];
+
+        return `
+          <div class="grid">
+            <div class="card">
+              <h2>🍽️ Build your plate</h2>
+              <div class="foods">
+                ${FOODS.map((f, i) => `<button class="btn" onclick="pl.push(${i});render()">${f[0]}${f[1]}</button>`).join('')}
+              </div>
+              <p class="sm">CO₂ per serving. Tap the plate to remove last item.</p>
+            </div>
+            <div class="card" style="text-align:center">
+              <div class="plate" onclick="pl.pop();render()">${pl.map(i => FOODS[i][0]).join('') || '😋'}</div>
+              <div class="big">${co.toFixed(2)} kg CO₂e</div>
+              <div class="bar ${co > 3 ? 'bad' : ''}"><i style="width:${Math.min(100, co / 5 * 100)}%"></i></div>
+              <p>${co <= 1.5 ? 'Low-carbon hero 🌟' : co <= 3 ? 'Okay 👍' : 'High-carbon 🔥'}</p>
+              <p class="sm">${tip}</p>
+              <select id="mt">
+                <option>Breakfast</option>
+                <option>Lunch</option>
+                <option>Dinner</option>
+                <option>Snack</option>
+              </select>
+              <button class="btn" onclick="logM()">Log meal ✅</button>
+              <button class="btn r" onclick="pl=[];render()">Clear</button>
+            </div>
+          </div>
+          <div class="card" style="margin-top:14px">
+            <h3>Today's meals (SDG 13)</h3>
+            ${ms.length ? ms.map((m, i) => `<div class="row">${m.t}:${m.items.join(' ')} <span class="tag ${m.co <= 1.5 ? '' : m.co <= 3 ? 'o' : 'x'}">${m.co} kg</span><button class="btn r" onclick="delM(${i})">✖</button></div>`).join('') : '<p>No meals logged yet.</p>'}
+          </div>`;
+      },
+
+      ocean() {
+        const u = U();
+        const p = u.g.filter(x => x.d == T());
+        const best = Math.max(0, ...u.g.map(x => x.s));
+
+        return `
+          <div class="card">
+            <h2>🌊 Ocean Cleanup Sorter (SDG 14)</h2>
+            <p class="sm">Drag falling trash into the right bin before it hits the sea! 3 lives. Points = score ÷ 5 (max 30/play). Plays today: ${p.length} · Best: ${best}</p>
+            <div style="position:relative;max-width:720px;margin:auto">
+              <canvas id="cv"></canvas>
+              <div id="ov" class="ov">
+                <h2>Ready? 🧤</h2>
+                <p>♻️ bottles, cans, paper · 🍌 food scraps · 🗑️ everything else</p>
+                <button class="btn" onclick="gStart()">Play!</button>
+              </div>
+            </div>
+          </div>`;
+      },
+
+      cal() {
+        const u = U();
+        const a = acts(u);
+        const f = new Date(cm.y, cm.m, 1).getDay();
+        const n = new Date(cm.y, cm.m + 1, 0).getDate();
+        const cells = [...Array(f)].map(() => '<div></div>');
+
+        for (let d = 1; d <= n; d++) {
+          const k = cm.y + '-' + String(cm.m + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+          const s = a[k] || new Set();
+          cells.push(`<div class="day ${k == T() ? 'today' : ''} ${k == sel ? 'sel' : ''} ${s.size >= 3 ? 'star' : ''}" onclick="sel='${k}';render()">${d}<br>${[...s].join('')}</div>`);
+        }
+
+        const w = u.w[sel] || [];
+        const m = u.m[sel] || [];
+        const fl = u.fl.filter(x => x.d == sel);
+        const g = u.g.filter(x => x.d == sel);
+
+        return `
+          <div class="card">
+            <div class="row">
+              <button class="btn" onclick="cm.m--;if(cm.m<0){cm.m=11;cm.y--}render()">◀</button>
+              <h2>${new Date(cm.y, cm.m, 1).toLocaleString('en', { month: 'long', year: 'numeric' })}</h2>
+              <button class="btn" onclick="cm.m++;if(cm.m>11){cm.m=0;cm.y++}render()">▶</button>
+            </div>
+            <div class="cal">${'SMTWTFS'.split('').map(x => `<b>${x}</b>`).join('')}${cells.join('')}</div>
+            <p class="sm">💧 water 🍽️ meal 🧊 fridge 🌊 game · green = 3+ habits · 🔥 streak: ${calc(u).streak}</p>
+          </div>
+          <div class="card" style="margin-top:14px">
+            <h3>${sel}</h3>
+            ${w.length + m.length + fl.length + g.length ? '' : '<p>No habits logged this day.</p>'}
+            ${w.length ? `<div class="row">💧 Water <b>${w.reduce((x, y) => x + y.l, 0).toFixed(1)} L</b> (${w.length} entries)</div>` : ''}
+            ${m.map(x => `<div class="row">🍽️ ${x.t} ${x.items.join('')} <b>${x.co} kg</b></div>`).join('')}
+            ${fl.map(x => `<div class="row">🧊 ${{ u: 'Ate', r: 'Rescued', w: 'Wasted' }[x.k]}${E(x.n)}</div>`).join('')}
+            ${g.map(x => `<div class="row">🌊 Game score <b>${x.s}</b></div>`).join('')}
+          </div>`;
+      },
+
+      rank() {
+        return `
+          <div class="card">
+            <h2>🏆 Global Rank</h2>
+            <p class="sm">Live worldwide leaderboard: every player on every device.</p>
+            <div id="rk">Loading…</div>
+          </div>`;
+      },
+
+      sdg() {
+        const c = calc(U());
+        return `
+          <div class="grid">
+            ${Object.keys(SD).map(k => {
+              const s = SD[k];
+              const v = c.s[k];
+              return `
+                <div class="card">
+                  <div class="big">${s[1]}</div>
+                  <h3>SDG ${k}:${s[0]}</h3>
+                  <p class="sm">${s[2]}</p>
+                  <div class="bar"><i style="width:${Math.min(100, v)}%"></i></div>
+                  <p><b>${v} pts</b> · Level ${Math.floor(v / 50) + 1}${v >= 100 ? '🏅' : ''}</p>
+                </div>`;
+            }).join('')}
+          </div>
+          <p class="sm">Points from a habit can count toward more than one SDG, but your total SDG score counts each point once.</p>`;
+      }
+    };
+
+    /* APP ACTIONS */
+    function addF() {
+      const n = $('#fn').value.trim();
+      const e = $('#fe').value;
+      if (!n || !e) return toast('Add a name and expiry date');
+      U().f.push({ id: Date.now(), n, q: $('#fq').value.trim(), e });
+      save();
+      render();
+    }
+
+    function eatF(id) {
+      const u = U();
+      const i = u.f.find(x => x.id == id);
+      const d = dl(i.e);
+      if (d < 0) return toast('Too old to eat! Toss it safely 🗑️');
+      const k = d <= 2 ? 'r' : 'u';
+      u.fl.push({ d: T(), k, n: i.n });
+      u.f = u.f.filter(x => x.id != id);
+      save();
+      toast(k == 'r' ? 'Rescued! +6 ⭐' : 'Yum! +4 ⭐');
+      render();
+    }
+
+    function tossF(id) {
+      const u = U();
+      const i = u.f.find(x => x.id == id);
+      u.fl.push({ d: T(), k: 'w', n: i.n });
+      u.f = u.f.filter(x => x.id != id);
+      save();
+      toast('Wasted… −3 ⭐');
+      render();
+    }
+
+    const pushW = (n, l) => {
+      const u = U();
+      const t = T();
+      (u.w[t] = u.w[t] || []).push({ n, l });
+      save();
+      render();
+    };
+
+    function addW(i) {
+      pushW(W[i][0], W[i][1]);
+      toast('Logged 💧');
+    }
+
+    function addC() {
+      const l = parseFloat($('#wv').value);
+      if (!(l > 0)) return toast('Enter litres');
+      pushW($('#wl').value.trim() || '💧 Other', l);
+    }
+
+    function delW(i) {
+      U().w[T()].splice(i, 1);
+      save();
+      render();
+    }
+
+    function logM() {
+      if (!pl.length) return toast('Add food to your plate first');
+      const u = U();
+      const t = T();
+      const co = +pl.reduce((a, i) => a + FOODS[i][2], 0).toFixed(2);
+      (u.m[t] = u.m[t] || []).push({ t: $('#mt').value, items: pl.map(i => FOODS[i][0]), co });
+      pl = [];
+      save();
+      toast(co <= 1.5 ? 'Low-carbon! +6 ⭐' : co <= 3 ? 'Nice! +3 ⭐' : 'Logged +1 ⭐');
+      render();
+    }
+
+    function delM(i) {
+      U().m[T()].splice(i, 1);
+      save();
+      render();
+    }
+
+    /* OCEAN GAME LOGIC */
+    const BINS = [
+      { k: 'R', e: '♻️', c: '#4db8ff', n: 'Recycle' },
+      { k: 'O', e: '🍌', c: '#7ed957', n: 'Compost' },
+      { k: 'T', e: '🗑️', c: '#b9a8ff', n: 'Trash' }
+    ];
+
+    const IT = {
+      R: ['🧴', '🥫', '📰', '📦', '🍾'],
+      O: ['🍌', '🍎', '🥕', '🍂', '🥚'],
+      T: ['🚬', '🛍️', '🪥', '🍬', '🧦']
+    };
+
+    let LID = 0;
+
+    function ocean() {
+      const cv = $('#cv');
+      if (!cv) return;
+
+      const W = cv.width = Math.max(300, Math.min(720, cv.parentElement.clientWidth));
+      const H = cv.height = 440;
+      const x = cv.getContext('2d');
+      const id = ++LID;
+      const bw = W / 3;
+      const ov = $('#ov');
+
+      let g = { on: false, it: [], sc: 0, li: 3, lv: 1, n: 0, t: 0, d: null, fx: [] };
+
+      window.gStart = () => {
+        g = { on: true, it: [], sc: 0, li: 3, lv: 1, n: 0, t: 0, d: null, fx: [] };
+        ov.style.display = 'none';
+      };
+
+      const end = () => {
+        g.on = false;
+        g.d = null;
+        const p = Math.min(30, g.sc / 5 | 0);
+        if (g.sc > 0) {
+          U().g.push({ d: T(), s: g.sc });
+          save();
+        }
+        ov.style.display = 'flex';
+        ov.innerHTML = `
+          <h2>Game over!</h2>
+          <p>Score ${g.sc} → +${p} SDG points 🌟</p>
+          <button class="btn" onclick="gStart()">Play again</button>`;
+      };
+
+      const pos = e => {
+        const r = cv.getBoundingClientRect();
+        return [(e.clientX - r.left) * W / r.width, (e.clientY - r.top) * H / r.height];
+      };
+
+      cv.onpointerdown = e => {
+        if (!g.on) return;
+        const [px, py] = pos(e);
+        for (let i = g.it.length - 1; i >= 0; i--) {
+          const o = g.it[i];
+          if (Math.hypot(o.x - px, o.y - py) < 34) {
+            g.d = o;
+            cv.setPointerCapture(e.pointerId);
+            break;
+          }
+        }
+      };
+
+      cv.onpointermove = e => {
+        if (g.d) {
+          const [px, py] = pos(e);
+          g.d.x = px;
+          g.d.y = py;
+        }
+      };
+
+      cv.onpointerup = e => {
+        const o = g.d;
+        if (!o) return;
+        g.d = null;
+        const [px, py] = pos(e);
+        if (py > H - 135) {
+          g.it = g.it.filter(q => q !== o);
+          const b = BINS[Math.max(0, Math.min(2, px / bw | 0))];
+          if (b.k === o.k) {
+            g.sc += 10;
+            g.n++;
+            if (g.n % 5 == 0) g.lv++;
+            g.fx.push({ x: px, y: py, s: '+10', c: '#1f9a3f', a: 40 });
+          } else {
+            g.li--;
+            g.fx.push({ x: px, y: py, s: '✖', c: '#e33', a: 40 });
+          }
+        }
+      };
+
+      const f = () => {
+        if (id !== LID || !document.body.contains(cv)) return;
+
+        if (g.on) {
+          g.t++;
+          if (g.t % Math.max(28, 85 - g.lv * 8) == 0) {
+            const k = 'ROT'[Math.random() * 3 | 0];
+            g.it.push({ k, e: IT[k][Math.random() * 5 | 0], x: 30 + Math.random() * (W - 60), y: -20, v: 0.8 + g.lv * 0.18 });
+          }
+
+          g.it = g.it.filter(o => {
+            if (o === g.d) return true;
+            o.y += o.v;
+            if (o.y > H - 110) {
+              g.li--;
+              g.fx.push({ x: o.x, y: H - 120, s: '💦', c: '#06c', a: 40 });
+              return false;
+            }
+            return true;
+          });
+
+          if (g.li <= 0) end();
+        }
+
+        const gr = x.createLinearGradient(0, 0, 0, H);
+        gr.addColorStop(0, '#bfefff');
+        gr.addColorStop(1, '#e9fff1');
+        x.fillStyle = gr;
+        x.fillRect(0, 0, W, H);
+        x.textAlign = 'left';
+
+        x.font = '34px serif';
+        x.fillText('☀️', W - 60, 45);
+        x.fillText('☁️', (g.t / 3) % W, 60);
+
+        x.fillStyle = '#2aa9e8';
+        x.beginPath();
+        x.moveTo(0, H);
+        for (let i = 0; i <= W; i += 10) x.lineTo(i, H - 62 + Math.sin(i / 30 + g.t / 20) * 6);
+        x.lineTo(W, H);
+        x.fill();
+
+        x.font = '26px serif';
+        x.fillText('🐟', (g.t / 2) % W, H - 20);
+        x.fillText('🐢', W - (g.t / 3) % W, H - 8);
+
+        BINS.forEach((b, i) => {
+          x.fillStyle = b.c;
+          x.strokeStyle = '#1c4a2b';
+          x.lineWidth = 4;
+          x.beginPath();
+          x.roundRect(i * bw + 10, H - 112, bw - 20, 64, 16);
+          x.fill();
+          x.stroke();
+          x.fillStyle = '#123';
+          x.font = 'bold 15px sans-serif';
+          x.textAlign = 'center';
+          x.fillText(b.e + ' ' + b.n, i * bw + bw / 2, H - 72);
+        });
+
+        x.font = '36px serif';
+        g.it.forEach(o => x.fillText(o.e, o.x, o.y + 12));
+
+        g.fx = g.fx.filter(q => {
+          x.fillStyle = q.c;
+          x.font = 'bold 22px sans-serif';
+          x.fillText(q.s, q.x, q.y - (40 - q.a));
+          return --q.a > 0;
+        });
+
+        x.textAlign = 'left';
+        x.fillStyle = '#1c4a2b';
+        x.font = 'bold 18px sans-serif';
+        x.fillText('⭐ ' + g.sc + '   Lv ' + g.lv + '   ' + '❤️'.repeat(Math.max(0, g.li)), 12, 26);
+
+        requestAnimationFrame(f);
+      };
+
+      f();
+    }
+
+    // Initial render call
+    $('#app').innerHTML = '<p class="big" style="text-align:center;margin-top:20vh">🐸 Loading…</p>';
+  </script>
+</body>
+</html>
