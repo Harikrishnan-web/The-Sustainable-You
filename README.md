@@ -47,9 +47,3 @@ This public repository contains only public client-side configuration code. API 
 * **Firestore Security Rules:** Server-level authentication checks preventing unauthorized reading or overwriting of user documents.
 
 ---
-
-## 💻 Getting Started Locally
-
-1. **Clone the repository:**
-   ```bash
-   git clone [https://github.com/your-username/the-sustainable-you.git](https://github.com/your-username/the-sustainable-you.git)
