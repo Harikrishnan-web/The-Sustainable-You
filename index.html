@@ -33,15 +33,19 @@ canvas{display:block;border:4px solid var(--line);border-radius:18px;touch-actio
 .week{display:flex;gap:8px;align-items:flex-end;height:110px}.week div{flex:1;text-align:center;font-size:12px}.week i{display:block;background:var(--b);border:2px solid var(--line);border-radius:8px 8px 0 0}
 #toast{position:fixed;left:50%;bottom:20px;transform:translate(-50%,90px);background:var(--y);color:#1c4a2b;border:3px solid var(--line);border-radius:18px;padding:10px 18px;z-index:9;font-weight:800}#toast.s{animation:toast 2.6s}
 .big{font-size:34px;font-weight:900}.sm{font-size:13px;opacity:.8}
-</style></head><body><div class="bg" id="bg"></div><div id="app"></div><div id="toast"></div><script>
+</style></head><body><div class="bg" id="bg"></div><div id="app"></div><div id="toast"></div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+/* PASTE YOUR FIREBASE CONFIG HERE */
+const FIREBASE_CONFIG={apiKey:"PASTE_API_KEY",authDomain:"PASTE_PROJECT.firebaseapp.com",projectId:"PASTE_PROJECT_ID",appId:"PASTE_APP_ID"};
 const $=s=>document.querySelector(s),E=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-let mem={};const ld=(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return mem[k]??d}};
-const sv=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){mem[k]=v}};
 const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'),T=()=>ymd(new Date());
 const dl=e=>Math.round((new Date(e+'T00:00')-new Date(T()+'T00:00'))/864e5);
-const hash=s=>{let h=5381;for(const c of s)h=(h*33^c.charCodeAt(0))>>>0;return h.toString(36)};
-let users=ld('sy_users',{}),me=ld('sy_cur',null),page='home',mode='in',pl=[],sel=T(),cm={y:new Date().getFullYear(),m:new Date().getMonth()};
-const U=()=>users[me],save=()=>sv('sy_users',users);
+let D=null,me=null,pendingName=null,page='home',mode='in',pl=[],sel=T(),cm={y:new Date().getFullYear(),m:new Date().getMonth()};
+firebase.initializeApp(FIREBASE_CONFIG);const auth=firebase.auth(),db=firebase.firestore();let st=null;
+const U=()=>D,save=()=>{if(!D||!me)return;clearTimeout(st);st=setTimeout(()=>{const sc=calc(D).t;D.score=sc;db.collection('users').doc(me).set(D).catch(e=>toast('Sync failed: '+e.code));db.collection('board').doc(me).set({name:D.name,score:sc}).catch(()=>{})},300)};
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.remove('s');void t.offsetWidth;t.classList.add('s')}
 $('#bg').innerHTML=Array.from({length:9},(_,i)=>`<span style="left:${i*11+3}%;animation-duration:${9+i*2}s;animation-delay:-${i*2}s">${'🍃🌱🌿🍀'[i%4*2]||'🍃'}</span>`).join('');
 const TIERS=[[0,'Seed 🌰'],[50,'Sprout 🌱'],[150,'Sapling 🌿'],[350,'Tree 🌳'],[700,'Forest 🌲'],[1200,'Earth Hero 🌍']];
@@ -57,29 +61,32 @@ for(const d in u.m)u.m[d].forEach(m=>{days.add(d);add(m.co<=1.5?6:m.co<=3?3:1,[1
 u.fl.forEach(x=>{days.add(x.d);add({u:4,r:6,w:-3}[x.k],[2,12])});u.g.forEach(x=>{days.add(x.d);add(Math.min(30,x.s/5|0),[14])});
 for(const k in s)s[k]=Math.max(0,s[k]);let n=0,d=new Date();if(!days.has(ymd(d)))d.setDate(d.getDate()-1);while(days.has(ymd(d))){n++;d.setDate(d.getDate()-1)}
 return{t:Math.max(0,t),s,days,streak:n}}
-const BOTS=(()=>{let x=7;const r=()=>(x=x*16807%2147483647)/2147483647,A=['Leafy','Eco','Green','Sunny','Mossy','Bloom','River','Wild','Tiny','Brave'],B=['Panda','Fox','Frog','Otter','Sprout','Turtle','Bee','Whale','Fern','Owl'];return Array.from({length:240},(_,i)=>({n:A[i%10]+B[(i*7+3)%10]+(10+i),s:Math.floor(Math.pow(r(),1.6)*900)+5}))})();
-function board(){const all=BOTS.concat(Object.values(users).map(u=>({n:u.name,s:calc(u).t,me:u===U()}))).sort((a,b)=>b.s-a.s);return{all,pos:all.findIndex(x=>x.me)+1}}
+async function myRank(){const r=await db.collection('board').where('score','>',calc(D).t).limit(1000).get();return r.size+1}
+async function loadRank(){const el=$('#rk');try{const[top,pos]=await Promise.all([db.collection('board').orderBy('score','desc').limit(10).get(),myRank()]),med=['🥇','🥈','🥉'],row=(n,sc,i,m)=>`<div class="row" style="${m?'background:var(--y);color:#1c4a2b;border-radius:12px;padding:7px':''}"><span>${med[i]||'#'+(i+1)} ${E(n)}${m?' (you)':''}</span><b>${sc} pts</b></div>`;
+if(!$('#rk'))return;el.innerHTML=`<h3>You are #${pos}</h3>`+top.docs.map((d,i)=>row(d.data().name,d.data().score,i,d.id==me)).join('')+(pos>10?'<div class="row">⋯</div>'+row(D.name,calc(D).t,pos-1,1):'')}catch(e){if(el)el.textContent='Could not load leaderboard: '+e.code}}
 function acts(u){const a={},ad=(d,i)=>(a[d]=a[d]||new Set()).add(i);for(const d in u.w)if(u.w[d].length)ad(d,'💧');for(const d in u.m)if(u.m[d].length)ad(d,'🍽️');u.fl.forEach(x=>ad(x.d,'🧊'));u.g.forEach(x=>ad(x.d,'🌊'));return a}
 /* AUTH */
 function authView(){$('#app').innerHTML=`<div style="max-width:380px;margin:8vh auto" class="card"><div style="text-align:center"><div class="logo"><i>🐸</i> Sustainable You</div><p>Build daily habits. Boost your SDG score. Climb the global rank!</p></div>
 <div style="text-align:center"><button class="btn ${mode=='in'?'y':''}" onclick="mode='in';authView()">Log in</button><button class="btn ${mode=='up'?'y':''}" onclick="mode='up';authView()">Sign up</button></div>
-<p><input id="un" placeholder="Username" maxlength="16" style="width:100%"><input id="pw" type="password" placeholder="Password" style="width:100%"></p><p id="er" style="color:var(--r)"></p>
-<button class="btn" style="width:100%" onclick="doAuth()">${mode=='in'?'Log in 🌿':'Create my account 🌱'}</button><p class="sm">Accounts & data are stored in this browser only.</p></div>`}
-function doAuth(){const n=$('#un').value.trim(),p=$('#pw').value,k=n.toLowerCase(),er=m=>$('#er').textContent=m;if(n.length<2||p.length<3)return er('Username 2+ chars, password 3+ chars');
-if(mode=='up'){if(users[k])return er('Username taken');users[k]={name:n,pw:hash(p),f:[],fl:[],w:{},m:{},g:[],joined:T()}}else if(!users[k]||users[k].pw!=hash(p))return er('Wrong username or password');
-me=k;sv('sy_cur',me);save();page='home';render()}
-function logout(){me=null;sv('sy_cur',null);authView()}
+<p><input id="un" placeholder="Username" maxlength="16" style="width:100%"><input id="pw" type="password" placeholder="Password (6+ chars)" style="width:100%"></p><p id="er" style="color:var(--r)"></p>
+<button class="btn" style="width:100%" onclick="doAuth()">${mode=='in'?'Log in 🌿':'Create my account 🌱'}</button><p class="sm">☁️ Your account and progress sync across all your devices.</p></div>`}
+function doAuth(){const n=$('#un').value.trim(),p=$('#pw').value,er=m=>$('#er').textContent=m;
+if(!/^[A-Za-z0-9_]{2,16}$/.test(n))return er('Username: 2-16 letters, numbers or _');if(p.length<6)return er('Password needs 6+ characters');
+const em=n.toLowerCase()+'@sustainableyou.app';er('Please wait…');
+(mode=='up'?(pendingName=n,auth.createUserWithEmailAndPassword(em,p)):auth.signInWithEmailAndPassword(em,p)).catch(e=>er({'auth/email-already-in-use':'Username taken','auth/invalid-credential':'Wrong username or password','auth/wrong-password':'Wrong username or password','auth/user-not-found':'Wrong username or password','auth/network-request-failed':'No internet connection'}[e.code]||e.code+' (check Firebase setup)'))}
+function logout(){auth.signOut()}
+auth.onAuthStateChanged(async u=>{if(!u){me=null;D=null;return authView()}me=u.uid;try{const sn=await db.collection('users').doc(me).get();D=sn.exists?sn.data():{name:pendingName||u.email.split('@')[0],f:[],fl:[],w:{},m:{},g:[],joined:T(),score:0};['f','fl','g'].forEach(k=>D[k]=D[k]||[]);['w','m'].forEach(k=>D[k]=D[k]||{});if(!sn.exists)save();page='home';render()}catch(e){authView();$('#er').textContent='Database error: '+e.code+' (check Firestore rules)'}});
 /* PAGES */
 const NAV=[['home','🏠 Home'],['fridge','🧊 Fridge Rescue'],['water','💧 Drop Counter'],['plate','🍽️ Carbon Plate'],['ocean','🌊 Ocean Sorter'],['cal','📅 Calendar'],['rank','🏆 Global Rank'],['sdg','🎯 My SDGs']];
 const go=p=>{page=p;render()};
 function render(){if(!me||!U())return authView();const c=calc(U());
 $('#app').innerHTML=`<header><div class="logo"><i>🐸</i> Sustainable You</div><div>⭐ ${c.t} · 🔥 ${c.streak}d · 👤 ${E(U().name)} <button class="btn y" onclick="logout()">Log out</button></div></header>
-<nav>${NAV.map(n=>`<button class="btn ${page==n[0]?'on':''}" onclick="go('${n[0]}')">${n[1]}</button>`).join('')}</nav><main>${P[page]()}</main>`;if(page=='ocean')ocean()}
+<nav>${NAV.map(n=>`<button class="btn ${page==n[0]?'on':''}" onclick="go('${n[0]}')">${n[1]}</button>`).join('')}</nav><main>${P[page]()}</main>`;if(page=='ocean')ocean();if(page=='rank')loadRank();if(page=='home')myRank().then(r=>{const e=$('#hr');if(e)e.textContent='#'+r}).catch(()=>{})}
 const P={
-home(){const u=U(),c=calc(u),b=board(),t=T(),w=(u.w[t]||[]).reduce((a,x)=>a+x.l,0),m=(u.m[t]||[]).length,soon=u.f.filter(i=>dl(i.e)<=2).length;
+home(){const u=U(),c=calc(u),t=T(),w=(u.w[t]||[]).reduce((a,x)=>a+x.l,0),m=(u.m[t]||[]).length,soon=u.f.filter(i=>dl(i.e)<=2).length;
 let ti=0;TIERS.forEach((x,i)=>{if(c.t>=x[0])ti=i});const nx=TIERS[ti+1],pct=nx?(c.t-TIERS[ti][0])/(nx[0]-TIERS[ti][0])*100:100;
 return`<div class="grid"><div class="card" style="text-align:center"><div class="ring" style="--p:${Math.min(100,c.t/12)}"><b>${c.t}</b></div><h2>SDG Score</h2><span class="tag o">${TIERS[ti][1]}</span><div class="bar" style="margin-top:10px"><i style="width:${pct}%"></i></div><p class="sm">${nx?nx[0]-c.t+' pts to '+nx[1]:'Max tier reached!'}</p></div>
-<div class="card" style="text-align:center"><h3>Global Rank</h3><div class="big">#${b.pos}</div><p class="sm">of ${b.all.length} players worldwide</p><h3>🔥 Streak</h3><div class="big">${c.streak} day${c.streak==1?'':'s'}</div><button class="btn b" onclick="go('rank')">Leaderboard</button></div>
+<div class="card" style="text-align:center"><h3>Global Rank</h3><div class="big" id="hr">…</div><p class="sm">live worldwide ranking</p><h3>🔥 Streak</h3><div class="big">${c.streak} day${c.streak==1?'':'s'}</div><button class="btn b" onclick="go('rank')">Leaderboard</button></div>
 <div class="card"><h3>Today's quests (${t})</h3><div class="row">💧 Water today <span class="tag ${w?(w<=100?'':'o'):'x'}">${w?w.toFixed(1)+' L':'not logged'}</span></div><div class="row">🍽️ Meals logged <span class="tag ${m?'':'x'}">${m}</span></div><div class="row">🧊 Items to rescue <span class="tag ${soon?'o':''}">${soon}</span></div><div class="row">🌊 Ocean plays <span class="tag">${u.g.filter(x=>x.d==t).length}</span></div></div></div>
 <div class="grid">${[['fridge','🧊','Fridge Rescue','Track food & stop waste'],['water','💧','Drop Counter','Log water use'],['plate','🍽️','Carbon Plate','Build low-CO₂ meals'],['ocean','🌊','Ocean Sorter','Play & clean the sea']].map(x=>`<div class="card" style="cursor:pointer;text-align:center" onclick="go('${x[0]}')"><div class="big">${x[1]}</div><h3>${x[2]}</h3><span class="sm">${x[3]}</span></div>`).join('')}</div>`},
 fridge(){const u=U(),it=[...u.f].sort((a,b)=>a.e<b.e?-1:1),soon=it.filter(i=>dl(i.e)>=0&&dl(i.e)<=2),r=u.fl.filter(x=>x.k!='w').length,w=u.fl.filter(x=>x.k=='w').length;
@@ -103,8 +110,7 @@ for(let d=1;d<=n;d++){const k=cm.y+'-'+String(cm.m+1).padStart(2,'0')+'-'+String
 const w=u.w[sel]||[],m=u.m[sel]||[],fl=u.fl.filter(x=>x.d==sel),g=u.g.filter(x=>x.d==sel);
 return`<div class="card"><div class="row"><button class="btn" onclick="cm.m--;if(cm.m<0){cm.m=11;cm.y--}render()">◀</button><h2>${new Date(cm.y,cm.m,1).toLocaleString('en',{month:'long',year:'numeric'})}</h2><button class="btn" onclick="cm.m++;if(cm.m>11){cm.m=0;cm.y++}render()">▶</button></div><div class="cal">${'SMTWTFS'.split('').map(x=>`<b>${x}</b>`).join('')}${cells.join('')}</div><p class="sm">💧 water 🍽️ meal 🧊 fridge 🌊 game · green = 3+ habits · 🔥 streak: ${calc(u).streak}</p></div>
 <div class="card" style="margin-top:14px"><h3>${sel}</h3>${w.length+m.length+fl.length+g.length?'':'<p>No habits logged this day.</p>'}${w.length?`<div class="row">💧 Water <b>${w.reduce((x,y)=>x+y.l,0).toFixed(1)} L</b> (${w.length} entries)</div>`:''}${m.map(x=>`<div class="row">🍽️ ${x.t} ${x.items.join('')} <b>${x.co} kg</b></div>`).join('')}${fl.map(x=>`<div class="row">🧊 ${{u:'Ate',r:'Rescued',w:'Wasted'}[x.k]} ${E(x.n)}</div>`).join('')}${g.map(x=>`<div class="row">🌊 Game score <b>${x.s}</b></div>`).join('')}</div>`},
-rank(){const b=board(),top=b.all.slice(0,10),med=['🥇','🥈','🥉'],row=(x,i)=>`<div class="row" style="${x.me?'background:var(--y);color:#1c4a2b;border-radius:12px;padding:7px':''}"><span>${med[i]||'#'+(i+1)} ${E(x.n)}${x.me?' (you)':''}</span><b>${x.s} pts</b></div>`;
-return`<div class="card"><h2>🏆 Global Rank: #${b.pos} of ${b.all.length}</h2><p class="sm">Compared with the worldwide community & every account on this device. Log habits daily to climb!</p>${top.map(row).join('')}${b.pos>10?'<div class="row">⋯</div>'+row(b.all[b.pos-1],b.pos-1):''}</div>`},
+rank(){return`<div class="card"><h2>🏆 Global Rank</h2><p class="sm">Live worldwide leaderboard: every player on every device.</p><div id="rk">Loading…</div></div>`},
 sdg(){const c=calc(U());return`<div class="grid">${Object.keys(SD).map(k=>{const s=SD[k],v=c.s[k];return`<div class="card"><div class="big">${s[1]}</div><h3>SDG ${k}: ${s[0]}</h3><p class="sm">${s[2]}</p><div class="bar"><i style="width:${Math.min(100,v)}%"></i></div><p><b>${v} pts</b> · Level ${Math.floor(v/50)+1} ${v>=100?'🏅':''}</p></div>`}).join('')}</div><p class="sm">Points from a habit can count toward more than one SDG, but your total SDG score counts each point once.</p>`}};
 /* ACTIONS */
 function addF(){const n=$('#fn').value.trim(),e=$('#fe').value;if(!n||!e)return toast('Add a name and expiry date');U().f.push({id:Date.now(),n,q:$('#fq').value.trim(),e});save();render()}
@@ -137,5 +143,5 @@ BINS.forEach((b,i)=>{x.fillStyle=b.c;x.strokeStyle='#1c4a2b';x.lineWidth=4;x.beg
 x.font='36px serif';g.it.forEach(o=>x.fillText(o.e,o.x,o.y+12));
 g.fx=g.fx.filter(q=>{x.fillStyle=q.c;x.font='bold 22px sans-serif';x.fillText(q.s,q.x,q.y-(40-q.a));return--q.a>0});
 x.textAlign='left';x.fillStyle='#1c4a2b';x.font='bold 18px sans-serif';x.fillText('⭐ '+g.sc+'   Lv '+g.lv+'   '+'❤️'.repeat(Math.max(0,g.li)),12,26);requestAnimationFrame(f)};f()}
-render();
+$('#app').innerHTML='<p class="big" style="text-align:center;margin-top:20vh">🐸 Loading…</p>';
 </script></body></html>
