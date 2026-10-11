@@ -434,12 +434,12 @@
   <div id="app"></div>
   <div id="toast"></div>
 
-  <!-- Firebase Compatibility Libraries (Required for app logic) -->
+  <!-- Firebase Compatibility Libraries -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
-  <!-- YOUR FIREBASE ES MODULE SCRIPT -->
+  <!-- FIREBASE ES MODULE CONFIGURATION -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-analytics.js";
@@ -454,24 +454,21 @@
       measurementId: "G-CMN9Y3Y99R"
     };
 
-    // Initialize Firebase v13 Modular SDK
     const app = initializeApp(firebaseConfig);
     const analytics = getAnalytics(app);
 
-    // Make config globally accessible to compatibility SDKs
     window.FIREBASE_CONFIG = firebaseConfig;
+    window.dispatchEvent(new Event('firebase-ready'));
   </script>
 
   <!-- MAIN APPLICATION CODE -->
   <script>
-    // Helper functions
     const $ = s => document.querySelector(s);
     const E = s => String(s).replace(/[&<">]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
     const ymd = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
     const T = () => ymd(new Date());
     const dl = e => Math.round((new Date(e + 'T00:00') - new Date(T() + 'T00:00')) / 864e5);
 
-    // Global application state
     let D = null;
     let me = null;
     let pendingName = null;
@@ -481,11 +478,44 @@
     let sel = T();
     let cm = { y: new Date().getFullYear(), m: new Date().getMonth() };
 
-    // Initialize Firebase Compatibility Services
-    firebase.initializeApp(window.FIREBASE_CONFIG);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-    let st = null;
+    let auth, db, st = null;
+
+    function initFirebaseApp() {
+      firebase.initializeApp(window.FIREBASE_CONFIG);
+      auth = firebase.auth();
+      db = firebase.firestore();
+
+      auth.onAuthStateChanged(async u => {
+        if (!u) {
+          me = null;
+          D = null;
+          return authView();
+        }
+        me = u.uid;
+        try {
+          const sn = await db.collection('users').doc(me).get();
+          D = sn.exists ? sn.data() : {
+            name: pendingName || u.email.split('@')[0],
+            f: [], fl: [], w: {}, m: {}, g: [],
+            joined: T(), score: 0
+          };
+          ['f', 'fl', 'g'].forEach(k => D[k] = D[k] || []);
+          ['w', 'm'].forEach(k => D[k] = D[k] || {});
+          if (!sn.exists) save();
+          page = 'home';
+          render();
+        } catch (e) {
+          authView();
+          $('#er').textContent = 'Database error: ' + e.code + ' (check Firestore rules)';
+        }
+      });
+    }
+
+    if (window.FIREBASE_CONFIG) {
+      initFirebaseApp();
+    } else {
+      window.addEventListener('firebase-ready', initFirebaseApp);
+    }
 
     const U = () => D;
     const save = () => {
@@ -507,12 +537,10 @@
       t.classList.add('s');
     }
 
-    // Floating background elements
     $('#bg').innerHTML = Array.from({ length: 9 }, (_, i) => 
       `<span style="left:${i * 11 + 3}%;animation-duration:${9 + i * 2}s;animation-delay:-${i * 2}s">${'🍃🌱🌿🍀'[i % 4 * 2] || '🍃'}</span>`
     ).join('');
 
-    // Game data and constants
     const TIERS = [
       [0, 'Seed 🌰'],
       [50, 'Sprout 🌱'],
@@ -646,7 +674,6 @@
       return a;
     }
 
-    /* AUTHENTICATION */
     function authView() {
       $('#app').innerHTML = `
         <div style="max-width:380px;margin:8vh auto" class="card">
@@ -695,32 +722,6 @@
       auth.signOut();
     }
 
-    auth.onAuthStateChanged(async u => {
-      if (!u) {
-        me = null;
-        D = null;
-        return authView();
-      }
-      me = u.uid;
-      try {
-        const sn = await db.collection('users').doc(me).get();
-        D = sn.exists ? sn.data() : {
-          name: pendingName || u.email.split('@')[0],
-          f: [], fl: [], w: {}, m: {}, g: [],
-          joined: T(), score: 0
-        };
-        ['f', 'fl', 'g'].forEach(k => D[k] = D[k] || []);
-        ['w', 'm'].forEach(k => D[k] = D[k] || {});
-        if (!sn.exists) save();
-        page = 'home';
-        render();
-      } catch (e) {
-        authView();
-        $('#er').textContent = 'Database error: ' + e.code + ' (check Firestore rules)';
-      }
-    });
-
-    /* VIEWS AND RENDERING */
     const NAV = [
       ['home', '🏠 Home'],
       ['fridge', '🧊 Fridge Rescue'],
@@ -1003,7 +1004,7 @@
             ${w.length + m.length + fl.length + g.length ? '' : '<p>No habits logged this day.</p>'}
             ${w.length ? `<div class="row">💧 Water <b>${w.reduce((x, y) => x + y.l, 0).toFixed(1)} L</b> (${w.length} entries)</div>` : ''}
             ${m.map(x => `<div class="row">🍽️ ${x.t} ${x.items.join('')} <b>${x.co} kg</b></div>`).join('')}
-            ${fl.map(x => `<div class="row">🧊 ${{ u: 'Ate', r: 'Rescued', w: 'Wasted' }[x.k]}${E(x.n)}</div>`)}
+            ${fl.map(x => `<div class="row">🧊 ${{ u: 'Ate', r: 'Rescued', w: 'Wasted' }[x.k]}${E(x.n)}</div>`).join('')}
             ${g.map(x => `<div class="row">🌊 Game score <b>${x.s}</b></div>`).join('')}
           </div>`;
       },
@@ -1038,7 +1039,6 @@
       }
     };
 
-    /* APP ACTIONS */
     function addF() {
       const n = $('#fn').value.trim();
       const e = $('#fe').value;
@@ -1114,7 +1114,6 @@
       render();
     }
 
-    /* OCEAN GAME LOGIC */
     const BINS = [
       { k: 'R', e: '♻️', c: '#4db8ff', n: 'Recycle' },
       { k: 'O', e: '🍌', c: '#7ed957', n: 'Compost' },
@@ -1289,7 +1288,6 @@
       f();
     }
 
-    // Initial render call
     $('#app').innerHTML = '<p class="big" style="text-align:center;margin-top:20vh">🐸 Loading…</p>';
   </script>
 </body>
